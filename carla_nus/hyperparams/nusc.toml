@@ -1,0 +1,96 @@
+title = "HyperParameters"
+
+[paths]
+output = "../dataset/nus/"
+
+[occupancy]
+path = "../dataset/nus/bbox/"
+
+
+[lidar]
+
+sets = 1
+num = [1]
+
+channels = [
+    [32.0]
+]
+
+lower_fov = [
+    [-30]
+]
+
+upper_fov = [
+    [10.0]
+]
+
+lidar_range_in_meters = [
+    [200.0]
+]
+
+rotation_frequency = [
+    [20.0]
+]
+
+points_per_channel = [
+    [14_400]
+]
+
+GLOBAL_HEIGHT_POS = 1.8
+
+# 1x64
+
+x = [
+    [0.0]
+]
+
+y = [
+    [0.0]
+]
+
+z = [
+    [2.0]
+]
+
+roll = [
+    [0.0]
+]
+
+pitch = [
+    [0.0]
+]
+
+
+[camera]
+
+T_CAM_FRONT = [0.47, 0.0, 1.5]
+R_CAM_FRONT = [0.0, 0.0, 0.0]
+FOV_CAM_FRONT = 70.0
+
+
+T_CAM_FRONT_LEFT = [0.32, -0.5, 1.5]
+R_CAM_FRONT_LEFT = [0.0, 0.0, -55.0]
+FOV_CAM_FRONT_LEFT = 70.0
+
+
+T_CAM_FRONT_RIGHT = [0.32, 0.5, 1.5]
+R_CAM_FRONT_RIGHT = [0.0, 0.0, 55.0]
+FOV_CAM_FRONT_RIGHT = 70.0
+
+
+T_CAM_BACK_LEFT = [-0.21, -0.5, 1.5]
+R_CAM_BACK_LEFT = [0.0, 0.0, -110.0]
+FOV_CAM_BACK_LEFT = 70.0
+
+
+T_CAM_BACK_RIGHT = [-0.21, 0.5, 1.5]
+R_CAM_BACK_RIGHT = [0.0, 0.0, 110.0]
+FOV_CAM_BACK_RIGHT = 70.0
+
+
+T_CAM_BACK = [-1.2, 0.0, 1.5]
+R_CAM_BACK = [0.0, 0.0, 180.0]
+FOV_CAM_BACK = 110.0
+
+
+
