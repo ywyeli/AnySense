@@ -189,7 +189,7 @@ class ScenarioRunner(object):
         self.LIDAR_PATH = []
         self.LIDAR_SEG_PATH = []
         ldv = toml.load(f"../hyperparams/{args.lidar_params}")['lidar']
-        cdv = toml.load(f"../hyperparams/{args.lidar_params}")['camera']
+        self.cdv = toml.load(f"../hyperparams/{args.lidar_params}")['camera']
         self.CAMERA_HEIGHT_POS = ldv['GLOBAL_HEIGHT_POS']
         self.LIDAR_HEIGHT_POS = ldv['GLOBAL_HEIGHT_POS']
 
@@ -205,6 +205,7 @@ class ScenarioRunner(object):
         self.CALIBRATION_PATH = os.path.join(self.OUTPUT_FOLDER, 'training/calib/{0:012}.txt')  # 000100000001.txt
         self.EGO_POSITION_PATH = os.path.join(self.OUTPUT_FOLDER, 'training/position/15{0:014}.txt')
         self.TIMESTAMP_PATH = os.path.join(self.OUTPUT_FOLDER, 'training/timestamp/15{0:014}.txt')
+        self.SENSOR_INFO_PATH = os.path.join(self.OUTPUT_FOLDER, 'training/sensor_info/15{0:014}.txt')
 
         self.CAM_FRONT_PATH = os.path.join(self.OUTPUT_FOLDER,
                                            'IMAGE/CAM_FRONT/n008-2018-08-01-00-00-00-0400__CAM_FRONT__15{0:014}.jpg')
@@ -1525,6 +1526,7 @@ class ScenarioRunner(object):
             cam_back_right_fname = self.CAM_BACK_RIGHT_PATH.format(self.save_no)
 
             calib_filename = self.CALIBRATION_PATH.format(self.save_no)
+            sensor_info_filename = self.SENSOR_INFO_PATH.format(self.save_no)
 
             lidar_frame = []
             lidarseg_frame = []
@@ -1540,6 +1542,8 @@ class ScenarioRunner(object):
 
             save_ref_files(self.OUTPUT_FOLDER, self.save_no)
             save_kitti_data(kitti_fname, datapoints)
+
+            save_sensor_info(sensor_info_filename, self.cdv)
 
             save_image_data(cam_front_fname, to_rgb_array(data["cam_front_image"]))
             save_image_data(cam_front_left_fname, to_rgb_array(data["cam_front_left_image"]))

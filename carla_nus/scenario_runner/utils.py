@@ -25,6 +25,7 @@ __all__ = [
     "save_lidar_data_sweeps",
     "save_lidarseg_tags",
     "save_ref_files",
+    "save_sensor_info",
     "to_bgra_array",
     "to_rgb_array",
     "transform_points",
@@ -469,6 +470,11 @@ def save_ref_files(folder, id):
             f.write("15{0:014}".format(id) + "\n")
 
 
+def save_sensor_info(sensor_info_filename, cdv):
+    with open(sensor_info_filename, "w") as f:
+        toml.dump(cdv, f)
+
+
 def save_image_data(filename, image):
     # Convert to correct color format
     color_fmt = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -699,6 +705,7 @@ def create_directories(self, split, args):
     os.makedirs(path / "velodyne", exist_ok=True)
     os.makedirs(path / "calib", exist_ok=True)
     os.makedirs(path / "planes", exist_ok=True)
+    os.makedirs(path / "sensor_info", exist_ok=True)
 
 
 def array_to_location(array: np.ndarray):
