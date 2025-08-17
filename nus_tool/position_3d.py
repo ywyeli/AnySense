@@ -18,7 +18,7 @@ import toml
 import psutil
 import time
 import math
-
+from format_utils import *
 
 
 
@@ -755,14 +755,14 @@ def nuread(pathh, path_position, path_timestamp, root_path, scene_numbers, args)
     f.write(ego_pose_jsondata)
     f.close()
 
-    create_sensor_json(sensor_json, sensor_list)
-    create_calibrated_sensor_json(calibrated_sensor_json, sensor_list, args)
-    create_category_json(category_json)
+    create_sensor_json(root_path, sensor_json, sensor_list)
+    create_calibrated_sensor_json(root_path, calibrated_sensor_json, sensor_list, args)
+    create_category_json(root_path, category_json)
     
-    create_visibility_json(visibility_json)
-    create_attribute_json(attribute_json)
-    create_log_json(log_json)
-    create_map_json(map_json)
+    create_visibility_json(root_path, visibility_json)
+    create_attribute_json(root_path, attribute_json)
+    create_log_json(root_path, log_json)
+    create_map_json(root_path, map_json)
 
 
 # Press the green button in the gutter to run the script.
