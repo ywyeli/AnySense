@@ -1,41 +1,13 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Filter empty bounding boxes.
+# Aug 2025.
 
 
 import numpy as np
 import open3d as o3d
 import os
 from tqdm import tqdm
-import psutil
-import time
 
-
-# Function to set CPU affinity
-def set_cpu_affinity(mode):
-    cpu_cores = []
-    total_cpus = 16
-    used_cpus = None
-    start = int(time.time()) % total_cpus
-
-    if mode == 'Efficient':
-        used_cpus = 2
-    elif mode == 'Performance':
-        used_cpus = 4
-    else:
-        print(f'Error {mode}!')
-
-    for _ in range(used_cpus):
-        cpu_cores.append(start)
-        start += 2
-        if start >= total_cpus:
-            start -= total_cpus
-
-    p = psutil.Process(os.getpid())
-    p.cpu_affinity(cpu_cores)
-
-    print(f"Process is set to use CPU cores: {cpu_cores}")
+from format_utils import set_cpu_affinity
 
 
 def open_read_txt(file_name):
@@ -126,18 +98,6 @@ def load_point_cloud(bin_path):
     pcd.points = o3d.utility.Vector3dVector(point_cloud)
     pcd.paint_uniform_color([0, 0, 1])
 
-    # Compute depth as the Euclidean distance in the xy-plane
-    # xy_depth = np.linalg.norm(point_cloud[:, :2], axis=1)
-    # depth_min = xy_depth.min()
-    # depth_max = xy_depth.max()
-    # depth_norm = 1- (xy_depth / (depth_max - depth_min)) # Normalize depth values to range [0, 1]
-    # colormap = plt.get_cmap('viridis')  # Choose a colormap
-    # colors = colormap(depth_norm)[:, :3]  # Apply colormap and take RGB channels
-    # Map depth to blue color intensity
-    # colors = np.zeros((point_cloud.shape[0], 3))
-    # colors[:, 2] = depth_norm  # Set blue channel intensity based on normalized depth
-    # pcd.colors = o3d.utility.Vector3dVector(colors)
-
     return pcd
 
 
@@ -147,7 +107,7 @@ def process_files(txt_folder, pcd_folder, output_folder, label_index_path):
 
     # txt_files = []
     # bin_files = []
-    #
+
     # label_indexs = open_read_txt(label_index_path)
     # for index in label_indexs:
     #     txt_files.append(index[0] + '.txt')
@@ -204,9 +164,9 @@ def pre_render(txt_file_path, bin_file_path, output_file_path):
         cropped_pcd = pcd.crop(bbox)
         point_count = len(cropped_pcd.points)
         point_counts.append(point_count)
-        if point_count > 5:
+        if point_count >= 4:
             valid_objects.append(obj)
-        elif point_count > 3 and obj['type'] in ['pedestrian', 'bicycle', 'motorcycle']:
+        elif point_count >= 3 and obj['type'] in ['pedestrian', 'bicycle', 'motorcycle']:
             valid_objects.append(obj)
     # for i, count in enumerate(point_counts):
     #     print(f"Bounding Box {i + 1} contains {count} points")
@@ -232,7 +192,8 @@ def run(pcd, bboxes):
 
 
 if __name__ == '__main__':
-    set_cpu_affinity('Efficient')
+
+    set_cpu_affinity('Performance')
 
     pcd_folder = '../carla_nus/dataset/nus/LiDAR_p0_samples/samples/LIDAR_TOP'
     txt_folder = '../carla_nus/dataset/nus/training/label_2'
