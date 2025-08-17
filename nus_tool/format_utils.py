@@ -1,7 +1,5 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# format utils.
+# Aug 2025.
 
 
 import os
@@ -172,7 +170,7 @@ def openreadtxt(file_name):
     return data
 
 
-def create_sensor_json(sensor_json, sensor_list):
+def create_sensor_json(root_path, sensor_json, sensor_list):
     create_sensor_token = None
     for s in sensor_list:
         if s == 'LIDAR_TOP':
@@ -203,7 +201,7 @@ def create_sensor_json(sensor_json, sensor_list):
     f.close()
 
 
-def create_visibility_json(visibility_json):
+def create_visibility_json(root_path, visibility_json):
     visibility_json.append(
         {'description': 'visibility of whole object is between 80 and 100%',
          'token': '4',
@@ -230,7 +228,7 @@ def create_visibility_json(visibility_json):
     f.close()
 
 
-def create_category_json(category_json):
+def create_category_json(root_path, category_json):
     create_category_token = 'categorylidardetcategory00000car'
     category_json.append(
         {'token': create_category_token,
@@ -273,7 +271,7 @@ def create_category_json(category_json):
     f.close()
 
 
-def create_attribute_json(attribute_json):
+def create_attribute_json(root_path, attribute_json):
     create_attribute_token = 'vehiclemovingvehiclemovingvehicl'
     attribute_json.append(
         {'token': create_attribute_token,
@@ -321,7 +319,7 @@ def create_attribute_json(attribute_json):
     f.close()
 
 
-def create_log_json(log_json):
+def create_log_json(root_path, log_json):
     log_json.append(
         {'token': 'logtokenlogtokenlogtokenlogtoken',
          'logfile': 'n008-2018-08-01-00-00-00-0400',
@@ -335,7 +333,7 @@ def create_log_json(log_json):
     f.close()
 
 
-def create_map_json(map_json):
+def create_map_json(root_path, map_json):
     map_json.append({
         "category": "semantic_prior",
         "token": "53992ee3023e5494b90c316c183be829",
@@ -350,7 +348,7 @@ def create_map_json(map_json):
     f.close()
 
 
-def create_calibrated_sensor_json(calibrated_sensor_json, sensor_list, args):
+def create_calibrated_sensor_json(root_path, calibrated_sensor_json, sensor_list, args):
 
     params = toml.load(f"../carla_nus/hyperparams/{args.hyperparams}")
 
