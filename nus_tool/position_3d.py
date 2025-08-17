@@ -1,7 +1,4 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Create annotation files for 3D object detection.
 
 
 import os
@@ -26,7 +23,7 @@ from format_utils import *
 
 
 # write json file
-def nuread(pathh, path_position, path_timestamp, root_path, scene_numbers, args):
+def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, scene_numbers, args):
     files = os.listdir(pathh)
     scene_json = []
     sensor_json = []
@@ -184,7 +181,7 @@ def nuread(pathh, path_position, path_timestamp, root_path, scene_numbers, args)
                     forma = '.pcd.bin'
                     height = 0
                     width = 0
-                    calibrated_sensor_token = '90000000000000000000000000000000'
+                    calibrated_sensor_token = '9000000000000000' + label_index
                     ego_pose_token = sample_data_token_lidar_top
 
                 else:
@@ -193,22 +190,22 @@ def nuread(pathh, path_position, path_timestamp, root_path, scene_numbers, args)
                     height = 900
                     width = 1600
                     if s == 'CAM_FRONT':
-                        calibrated_sensor_token = '90000000000000000000000000000001'
+                        calibrated_sensor_token = '9100000000000000' + label_index
                         ego_pose_token = sample_data_token_cam_front
                     if s == 'CAM_BACK':
-                        calibrated_sensor_token = '90000000000000000000000000000002'
+                        calibrated_sensor_token = '9200000000000000' + label_index
                         ego_pose_token = sample_data_token_cam_back
                     if s == 'CAM_FRONT_LEFT':
-                        calibrated_sensor_token = '90000000000000000000000000000003'
+                        calibrated_sensor_token = '9300000000000000' + label_index
                         ego_pose_token = sample_data_token_cam_front_left
                     if s == 'CAM_FRONT_RIGHT':
-                        calibrated_sensor_token = '90000000000000000000000000000004'
+                        calibrated_sensor_token = '9400000000000000' + label_index
                         ego_pose_token = sample_data_token_cam_front_right
                     if s == 'CAM_BACK_LEFT':
-                        calibrated_sensor_token = '90000000000000000000000000000005'
+                        calibrated_sensor_token = '9500000000000000' + label_index
                         ego_pose_token = sample_data_token_cam_back_left
                     if s == 'CAM_BACK_RIGHT':
-                        calibrated_sensor_token = '90000000000000000000000000000006'
+                        calibrated_sensor_token = '9600000000000000' + label_index
                         ego_pose_token = sample_data_token_cam_back_right
 
                 ego_pose_json.append(
@@ -756,7 +753,7 @@ def nuread(pathh, path_position, path_timestamp, root_path, scene_numbers, args)
     f.close()
 
     create_sensor_json(root_path, sensor_json, sensor_list)
-    create_calibrated_sensor_json(root_path, calibrated_sensor_json, sensor_list, args)
+    create_calibrated_sensor_json(root_path, pat_sensor_info, calibrated_sensor_json, sensor_list, args, check)
     create_category_json(root_path, category_json)
     
     create_visibility_json(root_path, visibility_json)
@@ -770,7 +767,7 @@ if __name__ == '__main__':
     set_cpu_affinity('Efficient')
 
     description = (
-        "July3D."
+        "August 2025."
     )
 
     parser = argparse.ArgumentParser(
@@ -789,10 +786,11 @@ if __name__ == '__main__':
     pat = "../carla_nus/dataset/nus/training/refine_2"
     pat_position = "../carla_nus/dataset/nus/training/position"
     pat_timestamp = "../carla_nus/dataset/nus/training/timestamp"
-    root_path = "../carla_nus/dataset/nus/LIDAR_p0_samples/"
+    pat_sensor_info = "../carla_nus/dataset/nus/training/sensor_info"
+    root_path = "../carla_nus/dataset/nus/LiDAR_p0_samples/"
     os.makedirs(root_path + "v1.0-trainval", exist_ok=True)
 
-    nuread(pat, pat_position, pat_timestamp, root_path, 500, arguments)
+    nuread(pat, pat_position, pat_timestamp, pat_sensor_info, root_path, 500, arguments)
 
     print('Successfully create v1.0-trainval file!')
 
