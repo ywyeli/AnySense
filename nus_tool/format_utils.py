@@ -1,4 +1,4 @@
-# format utils.
+# Utils for creating annotation files.
 # Aug 2025.
 
 
@@ -46,9 +46,9 @@ def set_cpu_affinity(mode):
     print(f"Process is set to use CPU cores: {cpu_cores}")
 
 
-def get_FOV_from(s, args):
-    params = toml.load(f"../carla_nus/hyperparams/{args.hyperparams}")
-    param = params['camera']
+def get_FOV_from(s, cam_ps):
+
+    param = cam_ps
 
     fov_1 = param[f'FOV_{s}']
 
@@ -82,9 +82,9 @@ def get_FOV_from(s, args):
     return intrinsic_matrix
 
 
-def get_T_from(s, args):
-    params = toml.load(f"../carla_nus/hyperparams/{args.hyperparams}")
-    param = params['camera']
+def get_T_from(s, cam_ps):
+
+    param = cam_ps
 
     list1 = param[f'T_{s}']
 
@@ -98,9 +98,9 @@ def get_T_from(s, args):
     return list(right)
 
 
-def get_R_from(s, args):
-    params = toml.load(f"../carla_nus/hyperparams/{args.hyperparams}")
-    param = params['camera']
+def get_R_from(s, cam_ps):
+
+    param = cam_ps
 
     left = param[f'R_{s}']
 
@@ -348,7 +348,7 @@ def create_map_json(root_path, map_json):
     f.close()
 
 
-def create_calibrated_sensor_json(root_path, calibrated_sensor_json, sensor_list, args):
+def create_calibrated_sensor_json(root_path, path_sensor_info, calibrated_sensor_json, sensor_list, args, check):
 
     params = toml.load(f"../carla_nus/hyperparams/{args.hyperparams}")
 
@@ -357,65 +357,75 @@ def create_calibrated_sensor_json(root_path, calibrated_sensor_json, sensor_list
 
     create_sensor_token = None
     create_calibrated_sensor_token = None
-    for s in sensor_list:
-        if s == 'LIDAR_TOP':
-            create_sensor_token = 'lidartoplidartoplidartoplidartop'
-            create_calibrated_sensor_token = '90000000000000000000000000000000'
-            translation = [0, 0, LIDAR_HEIGHT_POS]
-            rotation = [
-                0.707, 0, 0, -0.707
-            ]
-            camera_intrinsic = []
 
-        if s == 'CAM_FRONT':
-            create_sensor_token = 'camfrontcamfrontcamfrontcamfront'
-            create_calibrated_sensor_token = '90000000000000000000000000000001'
-            translation = get_T_from(s, args)
-            rotation = get_R_from(s, args)
-            camera_intrinsic = get_FOV_from(s, args)
+    for ih in range(len(check)):
+        cam_ps_index = check[ih]
 
-        if s == 'CAM_BACK':
-            create_sensor_token = 'cambackcambackcambackcambackcamb'
-            create_calibrated_sensor_token = '90000000000000000000000000000002'
-            translation = get_T_from(s, args)
-            rotation = get_R_from(s, args)
-            camera_intrinsic = get_FOV_from(s, args)
+        # open position
+        cam_ps_path = path_sensor_info + '/' + str(cam_ps_index) + '.txt'
 
-        if s == 'CAM_FRONT_LEFT':
-            create_sensor_token = 'camfrontleftcamfrontleftcamfront'
-            create_calibrated_sensor_token = '90000000000000000000000000000003'
-            translation = get_T_from(s, args)
-            rotation = get_R_from(s, args)
-            camera_intrinsic = get_FOV_from(s, args)
+        if os.path.exists(cam_ps_path):
+            cam_ps = toml.load(cam_ps_path)
 
-        if s == 'CAM_FRONT_RIGHT':
-            create_sensor_token = 'camfrontrightcamfrontrightcamfro'
-            create_calibrated_sensor_token = '90000000000000000000000000000004'
-            translation = get_T_from(s, args)
-            rotation = get_R_from(s, args)
-            camera_intrinsic = get_FOV_from(s, args)
+            for s in sensor_list:
+                if s == 'LIDAR_TOP':
+                    create_sensor_token = 'lidartoplidartoplidartoplidartop'
+                    create_calibrated_sensor_token = '9000000000000000' + str(cam_ps_index)
+                    translation = [0, 0, LIDAR_HEIGHT_POS]
+                    rotation = [
+                        0.707, 0, 0, -0.707
+                    ]
+                    camera_intrinsic = []
 
-        if s == 'CAM_BACK_LEFT':
-            create_sensor_token = 'cambackleftcambackleftcambacklef'
-            create_calibrated_sensor_token = '90000000000000000000000000000005'
-            translation = get_T_from(s, args)
-            rotation = get_R_from(s, args)
-            camera_intrinsic = get_FOV_from(s, args)
+                if s == 'CAM_FRONT':
+                    create_sensor_token = 'camfrontcamfrontcamfrontcamfront'
+                    create_calibrated_sensor_token = '9100000000000000' + str(cam_ps_index)
+                    translation = get_T_from(s, cam_ps)
+                    rotation = get_R_from(s, cam_ps)
+                    camera_intrinsic = get_FOV_from(s, cam_ps)
 
-        if s == 'CAM_BACK_RIGHT':
-            create_sensor_token = 'cambackrightcambackrightcambackr'
-            create_calibrated_sensor_token = '90000000000000000000000000000006'
-            translation = get_T_from(s, args)
-            rotation = get_R_from(s, args)
-            camera_intrinsic = get_FOV_from(s, args)
+                if s == 'CAM_BACK':
+                    create_sensor_token = 'cambackcambackcambackcambackcamb'
+                    create_calibrated_sensor_token = '9200000000000000' + str(cam_ps_index)
+                    translation = get_T_from(s, cam_ps)
+                    rotation = get_R_from(s, cam_ps)
+                    camera_intrinsic = get_FOV_from(s, cam_ps)
 
-        calibrated_sensor_json.append(
-            {'token': create_calibrated_sensor_token,
-             'sensor_token': create_sensor_token,
-             'translation': translation,
-             'rotation': rotation,
-             'camera_intrinsic': camera_intrinsic}
-        )
+                if s == 'CAM_FRONT_LEFT':
+                    create_sensor_token = 'camfrontleftcamfrontleftcamfront'
+                    create_calibrated_sensor_token = '9300000000000000' + str(cam_ps_index)
+                    translation = get_T_from(s, cam_ps)
+                    rotation = get_R_from(s, cam_ps)
+                    camera_intrinsic = get_FOV_from(s, cam_ps)
+
+                if s == 'CAM_FRONT_RIGHT':
+                    create_sensor_token = 'camfrontrightcamfrontrightcamfro'
+                    create_calibrated_sensor_token = '9400000000000000' + str(cam_ps_index)
+                    translation = get_T_from(s, cam_ps)
+                    rotation = get_R_from(s, cam_ps)
+                    camera_intrinsic = get_FOV_from(s, cam_ps)
+
+                if s == 'CAM_BACK_LEFT':
+                    create_sensor_token = 'cambackleftcambackleftcambacklef'
+                    create_calibrated_sensor_token = '9500000000000000' + str(cam_ps_index)
+                    translation = get_T_from(s, cam_ps)
+                    rotation = get_R_from(s, cam_ps)
+                    camera_intrinsic = get_FOV_from(s, cam_ps)
+
+                if s == 'CAM_BACK_RIGHT':
+                    create_sensor_token = 'cambackrightcambackrightcambackr'
+                    create_calibrated_sensor_token = '9600000000000000' + str(cam_ps_index)
+                    translation = get_T_from(s, cam_ps)
+                    rotation = get_R_from(s, cam_ps)
+                    camera_intrinsic = get_FOV_from(s, cam_ps)
+
+                calibrated_sensor_json.append(
+                    {'token': create_calibrated_sensor_token,
+                     'sensor_token': create_sensor_token,
+                     'translation': translation,
+                     'rotation': rotation,
+                     'camera_intrinsic': camera_intrinsic}
+                )
     calibrated_sensor_jsondata = json.dumps(calibrated_sensor_json, indent=4, separators=(',', ':'))
     f = open(root_path + 'v1.0-trainval/calibrated_sensor.json', 'w')
     f.write(calibrated_sensor_jsondata)
