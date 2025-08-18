@@ -68,28 +68,28 @@ def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, sce
     scene_token = 70000000000000000000000000000001
 
     # sample_token
-    sample_token = 10000000000000000000000000000001
+    sample_token_h = 10000000000000000000000000000000
 
     # sample_annotation_token
-    sample_annotation_token = 20000000000000000000000000000001
+    sample_annotation_token = 0
 
     # ego_pose_token
     ego_pose_token = 0
 
     # sample_data_token
-    sample_data_token_lidar_top = 30000000000000000000000000000001
+    sample_data_token_lidar_top_h = 30000000000000000000000000000000
 
-    sample_data_token_cam_front = 30100000000000000000000000000001
+    sample_data_token_cam_front_h = 30100000000000000000000000000000
 
-    sample_data_token_cam_back = 30200000000000000000000000000001
+    sample_data_token_cam_back_h = 30200000000000000000000000000000
 
-    sample_data_token_cam_front_left = 30300000000000000000000000000001
+    sample_data_token_cam_front_left_h = 30300000000000000000000000000000
 
-    sample_data_token_cam_front_right = 30400000000000000000000000000001
+    sample_data_token_cam_front_right_h = 30400000000000000000000000000000
 
-    sample_data_token_cam_back_left = 30500000000000000000000000000001
+    sample_data_token_cam_back_left_h = 30500000000000000000000000000000
 
-    sample_data_token_cam_back_right = 30600000000000000000000000000001
+    sample_data_token_cam_back_right_h = 30600000000000000000000000000000
 
     #######################################################################
     category_token = None
@@ -149,6 +149,17 @@ def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, sce
             timestamp_2 = path_timestamp + '/' + str(file_no) + '.txt'
             timestamp_data = openreadtxt(timestamp_2)
             timestamp = timestamp_data[0][0]
+
+            sample_token = sample_token_h + file_no
+
+            # sample_data_token
+            sample_data_token_lidar_top = sample_data_token_lidar_top_h + file_no
+            sample_data_token_cam_front = sample_data_token_cam_front_h + file_no
+            sample_data_token_cam_back = sample_data_token_cam_back_h + file_no
+            sample_data_token_cam_front_left = sample_data_token_cam_front_left_h + file_no
+            sample_data_token_cam_front_right = sample_data_token_cam_front_right_h + file_no
+            sample_data_token_cam_back_left = sample_data_token_cam_back_left_h + file_no
+            sample_data_token_cam_back_right = sample_data_token_cam_back_right_h + file_no
 
             if sample_token % 40 == 1:
                 sample_json.append(
@@ -263,14 +274,7 @@ def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, sce
                          'next': str(ego_pose_token + 1)}
                     )
 
-            # next sample_data_token
-            sample_data_token_lidar_top = sample_data_token_lidar_top + 1
-            sample_data_token_cam_front = sample_data_token_cam_front + 1
-            sample_data_token_cam_back = sample_data_token_cam_back + 1
-            sample_data_token_cam_front_left = sample_data_token_cam_front_left + 1
-            sample_data_token_cam_front_right = sample_data_token_cam_front_right + 1
-            sample_data_token_cam_back_left = sample_data_token_cam_back_left + 1
-            sample_data_token_cam_back_right = sample_data_token_cam_back_right + 1
+
 
             # overlap
             c_i = 0
@@ -387,6 +391,7 @@ def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, sce
 
             for data in datas:
                 instance_token_h = 'it' + str(file_no)[2:8] + '{0:08d}'.format(scene_name) + '{0:08d}'.format(int(data[-2]))
+                sample_annotation_token = 'an' + str(file_no)[2:] + '{0:08d}'.format(scene_name) + '{0:08d}'.format(int(data[-2]))
                 speed_h = float(data[-1])
 
                 if data[0] == 'car':
@@ -649,7 +654,6 @@ def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, sce
                 instances[instance_token]['size'].append(size1)
                 instances[instance_token]['rotation'].append(rotation1)
 
-                sample_annotation_token = sample_annotation_token + 1
 
             if sample_token % 40 == 0:
                 name = 'carla-' + str(scene_name)
@@ -665,8 +669,6 @@ def nuread(pathh, path_position, path_timestamp, pat_sensor_info, root_path, sce
                 scene_token = scene_token + 1
                 scene_name = scene_name + 1
 
-            # next sample
-            sample_token = sample_token + 1
 
     # name = 'carla-' + str(scene_name)
     # scene_json.append(
